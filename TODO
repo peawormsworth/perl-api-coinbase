@@ -1,0 +1,8 @@
+In no particular order:
+
+- verify the generated Time value is up to spec.
+
+- test the signature and nonce creation.
+
+- update test.pl to add the missing action modules and then uncomment from Processor.
+
