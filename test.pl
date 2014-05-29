@@ -11,18 +11,18 @@ use Coinbase::Processor;
 use Data::Dumper;
 use JSON;
 
-use constant DEBUG => 0;
+use constant DEBUG => 1;
 
 # Enter your Coinbase API key and secret values here...
 use constant KEY       => '';
 use constant SECRET    => '';
 
 # Tests...
-use constant TEST_ACCOUNT_CHANGES     => 0;
-use constant TEST_ACCOUNT_GET         => 0;
+use constant TEST_ACCOUNT_CHANGES     => 1;
+use constant TEST_ACCOUNT_GET         => 1;
 
 # Account Balance is NOT working for me...
-use constant TEST_ACCOUNT_BALANCE     => 0;
+use constant TEST_ACCOUNT_BALANCE     => 1;
 
 # These Account operations have never been tested...
 use constant TEST_ACCOUNT_NEW         => 0;
@@ -30,24 +30,24 @@ use constant TEST_ACCOUNT_UPDATE      => 0;
 use constant TEST_ACCOUNT_SET_PRIMARY => 0;
 use constant TEST_ACCOUNT_DELETE      => 0;
 
-use constant TEST_ADDRESSES           => 0;
-use constant TEST_OAUTH_LIST          => 0;
-use constant TEST_OAUTH_GET           => 0;
-use constant TEST_OAUTH_NEW           => 0;
+use constant TEST_ADDRESSES           => 1;
+use constant TEST_OAUTH_LIST          => 1;
+use constant TEST_OAUTH_GET           => 1;
+use constant TEST_OAUTH_NEW           => 1;
 
-use constant TEST_AUTH_INFO           => 0;
+use constant TEST_AUTH_INFO           => 1;
 
-use constant TEST_BUTTON_NEW          => 0;
-use constant TEST_BUTTON_CREATE       => 0;
+use constant TEST_BUTTON_NEW          => 1;
+use constant TEST_BUTTON_CREATE       => 1;
 
-use constant TEST_BUY                 => 0;
+use constant TEST_BUY                 => 1;
 
-use constant TEST_CONTACT_EMAILS      => 0;
+use constant TEST_CONTACT_EMAILS      => 1;
 
-use constant TEST_CURRENCY_INFO       => 0;
-use constant TEST_CURRENCY_RATES      => 0;
+use constant TEST_CURRENCY_INFO       => 1;
+use constant TEST_CURRENCY_RATES      => 1;
 
-use constant TEST_ORDER_LIST          => 0;
+use constant TEST_ORDER_LIST          => 1;
 use constant TEST_ORDER_NEW           => 1;
 use constant TEST_ORDER_GET           => 1;
 
