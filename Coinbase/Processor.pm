@@ -245,14 +245,17 @@ sub process_response {
     my $error_msg;
     eval {
         warn Data::Dumper->Dump([$self->http_response],['Response'])  if DEBUG;
+        # hmm... I dont know what is going on here. Originally I saw a response as a simple string
+        # so I put this fix in place. But now I am not getting the error... so I commented it out.
+        # Leave this here for now... if there is future problems with AuthInfo... we can uncomment this...
+        #
         # This is a hack! Because Coinbase forgot to return a proper json object for...
         #if ($self->request->isa('Coinbase::AuthInfo') and length($self->http_response->content)) {
-        if (0) {
-            $content = $self->http_response->content;
-        }
+            #$content = $self->http_response->content;
+        #}
         else {
             $content = $self->json->decode($self->http_response->content);
-        }
+        #}
         1;
     } or do {
         $self->error("Network Request (REST/JSON) error: $@");
