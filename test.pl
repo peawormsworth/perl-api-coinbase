@@ -18,22 +18,20 @@ use constant KEY       => '';
 use constant SECRET    => '';
 
 # Tests...
-use constant TEST_ACCOUNT_CHANGES     => 1;
 use constant TEST_ACCOUNT_GET         => 1;
-
-# Account Balance is NOT working for me...
+use constant TEST_ACCOUNT_CHANGES     => 1;
 use constant TEST_ACCOUNT_BALANCE     => 1;
 
-# These Account operations have never been tested...
-use constant TEST_ACCOUNT_NEW         => 0;
-use constant TEST_ACCOUNT_UPDATE      => 0;
-use constant TEST_ACCOUNT_SET_PRIMARY => 0;
-use constant TEST_ACCOUNT_DELETE      => 0;
+use constant TEST_ACCOUNT_NEW         => 1;
+use constant TEST_ACCOUNT_UPDATE      => 1;
+use constant TEST_ACCOUNT_SET_PRIMARY => 1;
+use constant TEST_ACCOUNT_DELETE      => 1;
 
 use constant TEST_ADDRESSES           => 1;
 use constant TEST_OAUTH_LIST          => 1;
 use constant TEST_OAUTH_GET           => 1;
 use constant TEST_OAUTH_NEW           => 1;
+use constant TEST_OAUTH_UPDATE        => 1;
 
 use constant TEST_AUTH_INFO           => 1;
 
@@ -51,11 +49,16 @@ use constant TEST_ORDER_LIST          => 1;
 use constant TEST_ORDER_NEW           => 1;
 use constant TEST_ORDER_GET           => 1;
 
+use constant TEST_PAYMENT_METHODS     => 1;
+
+use constant TEST_PRICE_BUY           => 1;
+
 
 main->new->go;
 
 sub json        { shift->{json}      ||  JSON->new }
 sub processor   { shift->{processor} ||= Coinbase::Processor->new(key => KEY, secret => SECRET) }
+sub account     { my $self = shift; $self->get_set(@_) }
 sub account_id  { my $self = shift; $self->get_set(@_) }
 sub order_id    { my $self = shift; $self->get_set(@_) }
 sub button_code { my $self = shift; $self->get_set(@_) }
@@ -96,9 +99,62 @@ sub go  {
         }
     }
 
-    if (TEST_ACCOUNT_BALANCE and TEST_ACCOUNT_CHANGES) {
+    if (TEST_ACCOUNT_BALANCE and TEST_ACCOUNT_GET) {
         printf 'Account Balance [%s]... ', $self->account_id;
         my $account = $self->processor->account_balance(account_id => $self->account_id);
+        if ($account) {
+            say 'success';
+            say Dumper $account if DEBUG;
+        }
+        else {
+            say 'failed';
+            say Dumper $self->processor->error if DEBUG;
+        }
+    }
+
+    if (TEST_ACCOUNT_NEW) {
+        print 'Create New Account... ';
+        my $account = $self->processor->account_new(account => {name => 'test'});
+        if ($account) {
+            say 'success';
+            say Dumper $account if DEBUG;
+            $self->account($account->{account});
+        }
+        else {
+            say 'failed';
+            say Dumper $self->processor->error if DEBUG;
+        }
+    }
+
+    if (TEST_ACCOUNT_UPDATE and TEST_ACCOUNT_NEW) {
+        print 'Update the Account... ';
+        my $account = $self->processor->account_update(id => $self->account->{id}, account => {name => 'Bob test'});
+        if ($account) {
+            say 'success';
+            say Dumper $account if DEBUG;
+        }
+        else {
+            say 'failed';
+            say Dumper $self->processor->error if DEBUG;
+        }
+    }
+
+    if (TEST_ACCOUNT_SET_PRIMARY and TEST_ACCOUNT_NEW) {
+        print 'Set the account as Default... ';
+        my $account = $self->processor->account_set_primary(id => $self->account->{id});
+        if ($account) {
+            say 'success';
+            say Dumper $account if DEBUG;
+        }
+        else {
+            say 'failed';
+            say Dumper $self->processor->error if DEBUG;
+        }
+    }
+
+    if (TEST_ACCOUNT_DELETE and TEST_ACCOUNT_NEW) {
+        print 'Delete the account... ';
+        my $account = $self->processor->account_delete(id => $self->account->{id});
         if ($account) {
             say 'success';
             say Dumper $account if DEBUG;
@@ -287,6 +343,19 @@ sub go  {
         if ($button) {
             say 'success';
             say Dumper $button if DEBUG;
+        }
+        else {
+            say 'failed';
+            say Dumper $self->processor->error if DEBUG;
+        }
+    }
+
+    if (TEST_PAYMENT_METHODS) {
+        print 'Payment Methods... ';
+        my $payment_methods = $self->processor->payment_methods;
+        if ($payment_methods) {
+            say 'success';
+            say Dumper $payment_methods if DEBUG;
         }
         else {
             say 'failed';
