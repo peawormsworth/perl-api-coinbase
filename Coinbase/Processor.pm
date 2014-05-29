@@ -21,10 +21,10 @@ use Coinbase::AccountChanges;
 ## Accounts...
 use Coinbase::AccountGet;
 use Coinbase::AccountBalance;
-#use Coinbase::AccountNew;
-#use Coinbase::AccountUpdate;
-#use Coinbase::AccountSetPrimary;
-#use Coinbase::AccountDelete;
+use Coinbase::AccountNew;
+use Coinbase::AccountUpdate;
+use Coinbase::AccountSetPrimary;
+use Coinbase::AccountDelete;
 ## BTC Addresses...
 use Coinbase::Addresses;
 ## Oauth Applications..
@@ -50,40 +50,42 @@ use Coinbase::OrderGet;
 ## Payment Methods...
 use Coinbase::PaymentMethods;
 ## Prices...
-#use Coinbase::PriceBuy;
-#use Coinbase::PriceSell;
-#use Coinbase::PriceSpot;
-#use Coinbase::PriceHistory;
+use Coinbase::PriceBuy;
+use Coinbase::PriceSell;
+use Coinbase::PriceSpot;
+use Coinbase::PriceHistory;
 ## Recurring Payments
-#use Coinbase::RecurringList;
-#use Coinbase::RecurringGet;
+use Coinbase::RecurringList;
+use Coinbase::RecurringGet;
 ## Reports...
-#use Coinbase::ReportList;
-#use Coinbase::ReportCreate;
-#use Coinbase::ReportGet;
+use Coinbase::ReportList;
+use Coinbase::ReportCreate;
+use Coinbase::ReportGet;
 ## Sells...
-##use Coinbase::Sell;
+use Coinbase::Sell;
 ## Subscribers...
-#use Coinbase::SubscriberList;
-#use Coinbase::SubscriberGet;
+use Coinbase::SubscriberList;
+use Coinbase::SubscriberGet;
 ## Tokens...
-#use Coinbase::TokenNew;
-#use Coinbase::TokenRedeem;
+use Coinbase::TokenNew;
+use Coinbase::TokenRedeem;
 ## Transactions...
-#use Coinbase::TransactionList;
-#use Coinbase::TransactionGet;
-#use Coinbase::TransactionSend;
-#use Coinbase::TransactionRequest;
-#use Coinbase::TransactionRequestRepeat;
-#use Coinbase::TransactionRequestCancel;
-##use Coinbase::TransactionRequestComplete;
-#use Coinbase::TransactionRequestPay; # I named this 'pay' but im not sure if that is what the request does.
+use Coinbase::TransactionList;
+use Coinbase::TransactionGet;
+use Coinbase::TransactionSend;
+use Coinbase::TransactionRequest;
+use Coinbase::TransactionRequestRepeat;
+use Coinbase::TransactionRequestCancel;
+use Coinbase::TransactionRequestComplete;
+# I would name the above 'Pay' as in "use Coinbase::TransactionRequestPay;"
+# .. but im not sure that is what 'complete' does.
 ## Transfers...
-#use Coinbase::TransferList;
+use Coinbase::TransferList;
 ## Users...
-#use Coinbase::UserNew;
-#use Coinbase::UserGet;
-#use Coinbase::UserUpdate;
+use Coinbase::UserNew;
+# Maybe this nex one should be UserList instead of User Get... i think it returns a list...
+use Coinbase::UserGet;
+use Coinbase::UserUpdate;
 
 use constant COMPANY          => 'Coinbase';
 use constant ATTRIBUTES       => qw(key secret);
@@ -161,6 +163,11 @@ use constant CLASS_ACTION_MAP => {
     user_new            => 'Coinbase::UserNew',
     user_get            => 'Coinbase::UserGet',
     user_update         => 'Coinbase::UserUpdate',
+    send_money          => 'Coinbase::TransactionSend',
+    request_money       => 'Coinbase::TransactionRequest',
+    # I just added these as better named shortcuts...
+    send_money          => 'Coinbase::TransactionSend',
+    request_money       => 'Coinbase::TransactionRequest',
 };
 
 sub is_ready {
@@ -281,7 +288,7 @@ sub process_response {
 # It is converted to Uppercase Hex.
 sub signature {
     my $self = shift;
-    return hmac_sha256_hex($self->nonce . $self->http_request->uri->as_string . $self->http_request->content || '', $self->secret);
+    return hmac_sha256_hex($self->nonce . $self->http_request->uri->as_string . ($self->http_request->content || ''), $self->secret);
 }
 
 # careful, this is "hot". It will return a different value with each call.
@@ -347,6 +354,8 @@ sub transfer_list       { _class_action(@_) }
 sub user_new            { _class_action(@_) }
 sub user_get            { _class_action(@_) }
 sub user_update         { _class_action(@_) }
+sub send_money          { _class_action(@_) }
+sub request_money       { _class_action(@_) }
 
 sub key           { my $self = shift; $self->get_set(@_) }
 sub secret        { my $self = shift; $self->get_set(@_) }
