@@ -48,7 +48,7 @@ use Coinbase::OrderList;
 use Coinbase::OrderNew;
 use Coinbase::OrderGet;
 ## Payment Methods...
-#use Coinbase::PaymentMethods;
+use Coinbase::PaymentMethods;
 ## Prices...
 #use Coinbase::PriceBuy;
 #use Coinbase::PriceSell;
@@ -253,7 +253,7 @@ sub process_response {
         #if ($self->request->isa('Coinbase::AuthInfo') and length($self->http_response->content)) {
             #$content = $self->http_response->content;
         #}
-        else {
+        #else {
             $content = $self->json->decode($self->http_response->content);
         #}
         1;
