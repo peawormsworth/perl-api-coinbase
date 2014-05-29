@@ -19,34 +19,34 @@ use Data::Dumper;
 # Account...
 use Coinbase::AccountChanges;
 ## Accounts...
-#use Coinbase::AccountGet;
-#use Coinbase::AccountBalance;
+use Coinbase::AccountGet;
+use Coinbase::AccountBalance;
 #use Coinbase::AccountNew;
 #use Coinbase::AccountUpdate;
 #use Coinbase::AccountSetPrimary;
 #use Coinbase::AccountDelete;
 ## BTC Addresses...
-#use Coinbase::Addresses;
+use Coinbase::Addresses;
 ## Oauth Applications..
-#use Coinbase::OauthList;
-#use Coinbase::OauthGet;
-#use Coinbase::OauthNew;
+use Coinbase::OauthList;
+use Coinbase::OauthGet;
+use Coinbase::OauthNew;
 ## Authorization...
-#use Coinbase::AuthInfo;
+use Coinbase::AuthInfo;
 ## Buttons...
-#use Coinbase::ButtonNew;
-#use Coinbase::ButtonCreate;
-## Buys...
-#use Coinbase::Buys;
+use Coinbase::ButtonNew;
+use Coinbase::ButtonCreate;
+## Buy...
+use Coinbase::Buy;
 ## Contacts...
-#use Coinbase::ContactEmail;
+use Coinbase::ContactEmails;
 ## Currencies...
-#use Coinbase::CurrencyInfo;
-#use Coinbase::CurrencyRates;
+use Coinbase::CurrencyInfo;
+use Coinbase::CurrencyRates;
 ## Orders
-#use Coinbase::OrdersReceived;
-#use Coinbase::OrderNew
-#use Coinbase::OrderGet
+use Coinbase::OrderList;
+use Coinbase::OrderNew;
+use Coinbase::OrderGet;
 ## Payment Methods...
 #use Coinbase::PaymentMethods;
 ## Prices...
@@ -114,17 +114,17 @@ use constant CLASS_ACTION_MAP => {
     # Buttons...
     button_new          => 'Coinbase::ButtonNew',
     button_create       => 'Coinbase::ButtonCreate',
-    # Buys...
-    buys                => 'Coinbase::Buys',
+    # Buy...
+    buy                 => 'Coinbase::Buy',
     # Contacts...',
     contact_emails      => 'Coinbase::ContactEmails',
     # Currencies...
     currency_info       => 'Coinbase::CurrencyInfo',
     currency_rates      => 'Coinbase::CurrencyRates',
     # Orders
-    orders_received     => 'Coinbase::OrdersReceived',
-    orders_new          => 'Coinbase::OrderNew',
-    orders_get          => 'Coinbase::OrderGet',
+    order_list          => 'Coinbase::OrderList',
+    order_new           => 'Coinbase::OrderNew',
+    order_get           => 'Coinbase::OrderGet',
     # Payment Methods...
     payment_methods     => 'Coinbase::PaymentMethods',
     # Prices...
@@ -204,11 +204,6 @@ sub send {
             $request->method($self->request->request_type);
             $request->uri($self->request->url);
             #my %query_form = $self->request->request_content;
-            if ($self->request->is_private) {
-                $request->header(ACCESS_KEY       => $self->key      );
-                $request->header(ACCESS_SIGNATURE => $self->signature);
-                $request->header(ACCESS_NONCE     => $self->nonce    );
-            }
             my $uri = URI->new;
             $uri->query_form($self->request->request_content);
             if ($self->request->request_type eq 'POST') {
@@ -218,10 +213,13 @@ sub send {
             elsif ($self->request->request_type eq 'GET' and $uri->query) {
                 $request->uri($request->uri . '?' . $uri->query);
             }
+            if ($self->request->is_private) {
+                $request->header(ACCESS_KEY       => $self->key      );
+                $request->header(ACCESS_SIGNATURE => $self->signature);
+                $request->header(ACCESS_NONCE     => $self->nonce    );
+            }
    
             #$request->header('Accept'   => 'application/json');
-            #warn Data::Dumper->Dump([$request, $self->http_request]);
-            #warn sprintf "Content: %s\n", $self->http_request->content;
 
             # create a new user_agent each time...
             $self->user_agent(LWP::UserAgent->new);
@@ -247,7 +245,14 @@ sub process_response {
     my $error_msg;
     eval {
         warn Data::Dumper->Dump([$self->http_response],['Response'])  if DEBUG;
-        $content = $self->json->decode($self->http_response->content);
+        # This is a hack! Because Coinbase forgot to return a proper json object for...
+        #if ($self->request->isa('Coinbase::AuthInfo') and length($self->http_response->content)) {
+        if (0) {
+            $content = $self->http_response->content;
+        }
+        else {
+            $content = $self->json->decode($self->http_response->content);
+        }
         1;
     } or do {
         $self->error("Network Request (REST/JSON) error: $@");
@@ -306,13 +311,13 @@ sub oauth_new           { _class_action(@_) }
 sub auth_info           { _class_action(@_) }
 sub button_new          { _class_action(@_) }
 sub button_create       { _class_action(@_) }
-sub buys                { _class_action(@_) }
+sub buy                 { _class_action(@_) }
 sub contact_emails      { _class_action(@_) }
 sub currency_info       { _class_action(@_) }
 sub currency_rates      { _class_action(@_) }
-sub orders_received     { _class_action(@_) }
-sub orders_new          { _class_action(@_) }
-sub orders_get          { _class_action(@_) }
+sub order_list          { _class_action(@_) }
+sub order_new           { _class_action(@_) }
+sub order_get           { _class_action(@_) }
 sub payment_methods     { _class_action(@_) }
 sub price_buy           { _class_action(@_) }
 sub price_sell          { _class_action(@_) }
